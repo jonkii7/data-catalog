@@ -1,6 +1,6 @@
 import express from "express";
 import { getEvents } from "../controllers/eventsController";
-import { getProperties } from "../controllers/propertiesController";
+import { deleteProperty, getProperties, getPropertyById, postProperty, updateProperty } from "../controllers/propertiesController";
 
 const router = express.Router();
 
@@ -12,8 +12,12 @@ router.use("/events", eventsRouter);
 router.use("/properties", propertiesRouter);
 router.use("/tracking-plan", trackingPlanRouter);
 
-eventsRouter.get("/", getEvents);
-
 propertiesRouter.get("/", getProperties);
+propertiesRouter.get("/:id", getPropertyById);
+propertiesRouter.post("/", postProperty);
+propertiesRouter.put("/:id", updateProperty);
+propertiesRouter.delete("/:id", deleteProperty);
+
+eventsRouter.get("/", getEvents);
 
 export default router;
