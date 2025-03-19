@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "driver": "pg",
+        "user": "user",
+        "password": "password",
+        "host": "data-catalog-db",
+        "database": "db",
+        "port": "5432"
+    }
+}

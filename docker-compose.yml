@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+    data-catalog-db:
+        container_name: data-catalog-db
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: db
+        ports:
+            - '5432:5432'
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U user -d db']
+            interval: 10s
+            retries: 5
+            start_period: 20s
+
+    app:
+        build: .
+        container_name: data-catalog-app
+        ports:
+            - '3000:3000'
+        environment:
+            - PORT=3000
+            - DB_USER=user
+            - DB_PASS=password
+            - DB_HOST=data-catalog-db
+            - DB_NAME=db
+            - DB_PORT=5432
+        depends_on:
+            data-catalog-db:
+                condition: service_healthy
+
+volumes:
+    postgres_data:
