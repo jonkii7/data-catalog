@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+    # PostgreSQL Database Service
     data-catalog-db:
         container_name: data-catalog-db
         image: postgres
@@ -13,12 +14,15 @@ services:
             - '5432:5432'
         volumes:
             - postgres_data:/var/lib/postgresql/data
-        healthcheck:
+        healthcheck: # Ensure Postgres is ready before dependent services start
             test: ['CMD-SHELL', 'pg_isready -U user -d db']
             interval: 10s
             retries: 5
             start_period: 20s
+        networks:
+            - data-catalog-network  # Connect to the custom network
 
+    # Application Service
     app:
         build: .
         container_name: data-catalog-app
@@ -31,9 +35,15 @@ services:
             - DB_HOST=data-catalog-db
             - DB_NAME=db
             - DB_PORT=5432
-        depends_on:
+        depends_on: # Ensure the database is healthy before starting the app
             data-catalog-db:
                 condition: service_healthy
+        networks:
+            - data-catalog-network  # Connect to the same network as the database
 
 volumes:
     postgres_data:
+
+# Define a custom network to isolate the services
+networks:
+  data-catalog-network:
