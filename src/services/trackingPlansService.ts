@@ -1,4 +1,48 @@
 import Pool from "../database/db";
+import { ITrackingPlan } from "../types/dbModels.types";
+import { TrackingPlan } from "../types/trackingPlan.types";
+import { getEventById } from "./eventsService";
+
+export async function getTrackingPlanById(id: number): Promise<TrackingPlan> {
+	try {
+		const result = await Pool.query(`SELECT * FROM tracking_plans WHERE id = $1;`, [id]);
+		const trackingPlanInfo: ITrackingPlan = result.rows[0];
+
+		const trackingPlan: TrackingPlan = {
+			id: trackingPlanInfo.id,
+			name: trackingPlanInfo.name,
+			description: trackingPlanInfo.description,
+			create_time: trackingPlanInfo.create_time,
+			update_time: trackingPlanInfo.create_time,
+			events: []
+		};
+
+		const trackingPlanEvents = await Pool.query(`SELECT * FROM tracking_plan_events WHERE tracking_plan_id = $1;`, [id]);
+
+		const events = await Promise.all(
+			trackingPlanEvents.rows.map(async (row) => {
+				const event = await getEventById(parseInt(row.event_id));
+		
+				return {
+					id: event.id,
+					name: event.name,
+					type: event.type,
+					description: event.description,
+					create_time: event.create_time,
+					update_time: event.update_time,
+					properties: event.properties,
+					additionalProperties: event.additionalProperties,
+				};
+			})
+		);
+
+		trackingPlan.events = events;
+
+		return trackingPlan;
+	} catch(error: any) {
+		throw new Error(error.message);
+	}
+}
 
 export async function postTrackingPlan(name: string, description: string): Promise<number> {
 	try {

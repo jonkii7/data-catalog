@@ -1,14 +1,9 @@
+import { Property } from "./property.types";
+
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 export interface EventPropertiesReqBody {
 	id: number,
 	required: boolean
-}
-
-export type Property = {
-	name: string,
-	type: "string" | "number" | "boolean";
-	required: boolean,
-	description: string
 }
 
 export type Event = {

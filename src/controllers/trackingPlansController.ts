@@ -2,6 +2,24 @@ import { Request, Response } from "express";
 import * as trackingPlansService from "../services/trackingPlansService";
 import { addPropertiesToEvent, postEvent } from "../services/eventsService";
 import { postProperty } from "../services/propertiesService";
+import { TrackingPlan } from "../types/trackingPlan.types";
+
+export async function getTrackingPlanById(req: Request, res: Response): Promise<void> {
+	const trackingPlanId = req.params.tid;
+
+	try {
+		const trackingPlan: TrackingPlan = await trackingPlansService.getTrackingPlanById(parseInt(trackingPlanId));
+		res.status(200).send({
+			tracking_plan: trackingPlan,
+		});
+		return;
+	} catch (err) {
+		res.status(500).send({
+			error: "Error getting tracking plan by id",
+		});
+		return;
+	}
+}
 
 export async function postTrackingPlan(req: Request, res: Response): Promise<void> {
 	const {name, description, events} = req.body;

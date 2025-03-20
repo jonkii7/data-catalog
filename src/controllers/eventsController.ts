@@ -13,14 +13,31 @@ export async function getEvents(_req: Request, res: Response): Promise<void> {
 		return;
 	} catch (err) {
 		res.status(500).send({
-			error: "Error getting properties",
+			error: "Error getting events",
+		});
+		return;
+	}
+}
+
+export async function getEventById(req: Request, res: Response): Promise<void> {
+	const id = req.params.eid;
+
+	try {
+		const event: Event = await eventsService.getEventById(parseInt(id));
+		res.status(200).send({
+			event: event,
+		});
+		return;
+	} catch (err) {
+		res.status(500).send({
+			error: "Error getting event by id",
 		});
 		return;
 	}
 }
 
 export async function postEvent(req: Request, res: Response): Promise<void> {
-	const {name, type, description, additional_properties} = req.body;
+	const { name, type, description, additional_properties } = req.body;
 
 	if(!name || !type || !description) {
 		res.status(400).send({
