@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Create a new instance of the Pool class to manage database connections
 const pool = new Pool({
 	user: "user",
 	host: "data-catalog-db",

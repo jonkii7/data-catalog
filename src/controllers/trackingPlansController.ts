@@ -21,9 +21,18 @@ export async function getTrackingPlanById(req: Request, res: Response): Promise<
 	}
 }
 
+/**
+ * @function postTrackingPlan
+ * @description Creates tracking plan.
+ * @param req The request object, which contains the name, description and events with their
+ * properties in the body.
+ * @param res  The response object to send back the status.
+ * @returns {Promise<void>} A promise that resolves with no value (void).
+ */
 export async function postTrackingPlan(req: Request, res: Response): Promise<void> {
 	const {name, description, events} = req.body;
 
+	// Request Body validations
 	if(!name || !description) {
 		res.status(400).send({
 			error: "Name and description should not be empty"
@@ -47,11 +56,15 @@ export async function postTrackingPlan(req: Request, res: Response): Promise<voi
 	}
 
 	try {
+		// Validations passed, so post tracking plan
 		const result = await trackingPlansService.postTrackingPlan(name, description);
 
 		const trackingPlanId = result;
 
+		// Post each event from body request
 		for (const event of events) {
+
+			// Request Body validations
 			if(!event.name || !event.type || !event.description) {
 				res.status(400).send({
 					error: "Event's columns name,type and description should not be empty"
@@ -82,10 +95,14 @@ export async function postTrackingPlan(req: Request, res: Response): Promise<voi
 			}
 			const eventId = await postEvent(event.name, event.type, event.description, event.additional_properties);
 
+			// Associate each event with the tracking plan
 			if(eventId)
 				await trackingPlansService.addEventsToTrackingPlan(trackingPlanId, [eventId]);
 
+			// Post each event's properties
 			for (const property of event.properties) {
+
+				// Request Body validations
 				if(!property.name || !property.type || !property.description) {
 					res.status(400).send({
 						error: "Property's columns name,type or description should not be empty."
@@ -115,6 +132,8 @@ export async function postTrackingPlan(req: Request, res: Response): Promise<voi
 				}
 
 				const propertyId = await postProperty(property.name, property.type, property.description);
+
+				// Associate each property with the event
 				if(eventId && propertyId)
 					await addPropertiesToEvent(eventId, [{id:propertyId, required:property.required}]);
 			}
@@ -155,6 +174,13 @@ export async function deleteTrackingPlan(req: Request, res: Response): Promise<v
 	} 
 }
 
+/**
+ * @function addEventsToTrackingPlan
+ * @description Adds events to a tracking plan.
+ * @param req The request object, which contains the 'tid' (tracking plan id) parameter and the events array in the body.
+ * @param res  The response object to send back the status.
+ * @returns {Promise<void>} A promise that resolves with no value (void).
+ */
 export async function addEventsToTrackingPlan(req: Request, res: Response): Promise<void> {
 	const trackingPlanId = req.params.tid;
 	const events: number[] = req.body.events;
@@ -179,6 +205,13 @@ export async function addEventsToTrackingPlan(req: Request, res: Response): Prom
 	}
 }
 
+/**
+ * @function removeEventFromTrackingPlan
+ * @description Removes an event from a tracking plan.
+ * @param req The request object containing the tracking plan id ('tid') and the event id ('eid').
+ * @param res  The response object to send back the status.
+ * @returns {Promise<void>} A promise that resolves with no value (void).
+ */
 export async function removeEventFromTrackingPlan(req: Request, res: Response): Promise<void> {
 	const {tid, eid} = req.params;
 

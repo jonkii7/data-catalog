@@ -5,9 +5,11 @@ import { getEventById } from "./eventsService";
 
 export async function getTrackingPlanById(id: number): Promise<TrackingPlan> {
 	try {
+		// Get tracking plan's info
 		const result = await Pool.query(`SELECT * FROM tracking_plans WHERE id = $1;`, [id]);
 		const trackingPlanInfo: ITrackingPlan = result.rows[0];
 
+		// Create tracking plan response object
 		const trackingPlan: TrackingPlan = {
 			id: trackingPlanInfo.id,
 			name: trackingPlanInfo.name,
@@ -17,8 +19,10 @@ export async function getTrackingPlanById(id: number): Promise<TrackingPlan> {
 			events: []
 		};
 
+		// Get associated events with the tracking plan
 		const trackingPlanEvents = await Pool.query(`SELECT * FROM tracking_plan_events WHERE tracking_plan_id = $1;`, [id]);
 
+		// Parse events and push them to tracking plan response object
 		const events = await Promise.all(
 			trackingPlanEvents.rows.map(async (row) => {
 				const event = await getEventById(parseInt(row.event_id));

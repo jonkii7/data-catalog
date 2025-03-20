@@ -40,6 +40,8 @@ export async function getPropertyById(req: Request, res: Response): Promise<void
 
 export async function postProperty(req: Request, res: Response): Promise<void> {
 	const { name, type, description}: IProperty = req.body;
+
+	// Request Body validations
 	if(!name || !type || !description) {
 		res.status(400).send({
 			error: "Name,type or description should not be empty."
@@ -85,6 +87,8 @@ export async function updateProperty(req: Request, res: Response): Promise<void>
 	const id = req.params.pid;
 
 	const { name, type, description}: IProperty = req.body;
+
+	// Request Body validations
 	if(!name || !type || !description) {
 		res.status(400).send({
 			error: "Name,type or description should not be empty."

@@ -2,6 +2,11 @@ import Pool from "../database/db";
 import { EventPropertiesReqBody } from "../types/event.types";
 import { Event } from "../types/event.types";
 
+/**
+ * @function getEvents
+ * @description Retrieves all events with their associated properties from the database.
+ * @returns {Promise<Event[]>} A promise that resolves to an array of events, each containing its properties.
+ */
 export async function getEvents(): Promise<Event[]> {
 	try {
 		const result = await Pool.query(`
@@ -26,7 +31,7 @@ export async function getEvents(): Promise<Event[]> {
 		const eventsMap: Record<number, Event> = {};
 
 		result.rows.forEach((row) => {
-			//If an event is now in eventsMap create it
+			//If an event is not in eventsMap create it
 			if(!eventsMap[row.event_id]) {
 				eventsMap[row.event_id]= {
 					id: row.event_id,
@@ -59,6 +64,13 @@ export async function getEvents(): Promise<Event[]> {
 	}
 }
 
+/**
+ * @function getEventById
+ * @description Retrieves an events with its associated properties from the database.
+ * @param req The request object, which contains the 'eid' (event id) parameter.
+ * @param res  The response object to send back the status.
+ * @returns {Promise<Event>} A promise that resolves to event's object, containing its properties.
+ */
 export async function getEventById(id: number): Promise<Event> {
 	try {
 		const result = await Pool.query(`
@@ -84,7 +96,7 @@ export async function getEventById(id: number): Promise<Event> {
 		const eventMap: Record<number, Event> = {};
 
 		result.rows.forEach((row) => {
-			//If an event is now in eventsMap create it
+			//If an event is not in eventsMap create it
 			if(!eventMap[row.event_id]) {
 				eventMap[row.event_id]= {
 					id: row.event_id,
@@ -118,13 +130,14 @@ export async function getEventById(id: number): Promise<Event> {
 }
 
 export async function postEvent(name: string, type: string, description: string, additional_properties: boolean): Promise<number | null> {
+	// Check if there is an existing event
 	const existingEvent = await Pool.query(
 		`SELECT id FROM events WHERE name = $1 AND type = $2;`,
 		[name, type]
 	);
 
+	// If event exists, return the existing event ID
 	if (existingEvent.rows.length > 0) {
-		// If event exists, return the existing event ID
 		return existingEvent.rows[0].id;
 	}
 

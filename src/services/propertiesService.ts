@@ -22,13 +22,14 @@ export async function getPropertyById(id: number): Promise<IProperty> {
 }
 
 export async function postProperty(name: string, type: string, description: string): Promise<number | null> {
+	// Check if there is an existing property
 	const existingProperty = await Pool.query(
 		`SELECT id FROM properties WHERE name = $1 AND type = $2;`,
 		[name, type]
 	);
 
+	// If property exists, return the existing event ID
 	if (existingProperty.rows.length > 0) {
-		// If property exists, return the existing event ID
 		return existingProperty.rows[0].id;
 	}
 	try {

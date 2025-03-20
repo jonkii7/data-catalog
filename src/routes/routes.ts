@@ -13,12 +13,14 @@ router.use("/events", eventsRouter);
 router.use("/properties", propertiesRouter);
 router.use("/tracking-plans", trackingPlansRouter);
 
+// Properties Routes
 propertiesRouter.get("/", getProperties);
 propertiesRouter.get("/:pid", getPropertyById);
 propertiesRouter.post("/", postProperty);
 propertiesRouter.put("/:pid", updateProperty);
 propertiesRouter.delete("/:pid", deleteProperty);
 
+// Events Routes
 eventsRouter.get("/", getEvents);
 eventsRouter.get("/:eid", getEventById);
 eventsRouter.post("/", postEvent);
@@ -27,6 +29,7 @@ eventsRouter.delete("/:eid", deleteEvent);
 eventsRouter.post("/:eid/properties", addPropertiesToEvent);
 eventsRouter.delete("/:eid/properties/:pid", removePropertyFromEvent);
 
+// Tracking plans Routes
 trackingPlansRouter.get("/:tid", getTrackingPlanById);
 trackingPlansRouter.post("/", postTrackingPlan);
 trackingPlansRouter.delete("/:tid", deleteTrackingPlan);

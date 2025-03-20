@@ -39,6 +39,7 @@ export async function getEventById(req: Request, res: Response): Promise<void> {
 export async function postEvent(req: Request, res: Response): Promise<void> {
 	const { name, type, description, additional_properties } = req.body;
 
+	// Request Body validations
 	if(!name || !type || !description) {
 		res.status(400).send({
 			error: "Name,type or description should not be empty"
@@ -85,6 +86,8 @@ export async function updateEvent(req: Request, res: Response): Promise<void> {
 	const id = req.params.eid;
 
 	const { name, type, description, additional_properties}: IEvent = req.body;
+
+	// Request Body validations
 	if(!name || !type || !description) {
 		res.status(400).send({
 			error: "Name, type, description should not be empty."
@@ -155,7 +158,13 @@ export async function deleteEvent(req: Request, res: Response): Promise<void> {
 		return;
 	} 
 }
-
+/**
+ * @function addPropertiesToEvent
+ * @description Adds properties to an event.
+ * @param req The request object, which contains the 'eid' (event id) parameter and the properties array in the body.
+ * @param res  The response object to send back the status.
+ * @returns {Promise<void>} A promise that resolves with no value (void).
+ */
 export async function addPropertiesToEvent(req: Request, res: Response): Promise<void> {
 	const eventId = req.params.eid;
 	const properties: EventPropertiesReqBody[] = req.body.properties;
@@ -180,6 +189,13 @@ export async function addPropertiesToEvent(req: Request, res: Response): Promise
 	}
 }
 
+/**
+ * @function removePropertyFromEvent
+ * @description Removes a property from a specific event.
+ * @param req The request object containing the event id ('eid') and property id ('pid').
+ * @param res  The response object to send back the status.
+ * @returns {Promise<void>} A promise that resolves with no value (void).
+ */
 export async function removePropertyFromEvent(req: Request, res: Response): Promise<void> {
 	const {eid, pid} = req.params;
 
