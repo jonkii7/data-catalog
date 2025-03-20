@@ -21,14 +21,23 @@ export async function getPropertyById(id: number): Promise<IProperty> {
 	}
 }
 
-export async function postProperty(name: string, type: string, description: string): Promise<IProperty> {
+export async function postProperty(name: string, type: string, description: string): Promise<number | null> {
+	const existingProperty = await Pool.query(
+		`SELECT id FROM properties WHERE name = $1 AND type = $2;`,
+		[name, type]
+	);
+
+	if (existingProperty.rows.length > 0) {
+		// If property exists, return the existing event ID
+		return existingProperty.rows[0].id;
+	}
 	try {
 		const result = await Pool.query(
 			`INSERT INTO properties (name, type, description)
-			 VALUES ($1, $2, $3);`,
+			 VALUES ($1, $2, $3) RETURNING id;`,
 			[name, type, description]
 		  );
-		return result.rows[0] as IProperty;
+		return result.rows[0].id;
 	} catch(error: any) {
 		throw new Error(error.message);
 	}
@@ -49,10 +58,10 @@ export async function updateProperty(id:number, name: string, type: string, desc
 	}
 }
 
-export async function deleteProperty(id: number): Promise<boolean> {
+export async function deleteProperty(id: number): Promise<number |null> {
 	try {
-		await Pool.query(`DELETE FROM properties WHERE id = $1`, [id]);
-		return true;
+		const result = await Pool.query(`DELETE FROM properties WHERE id = $1`, [id]);
+		return result.rowCount;
 	} catch(error: any) {
 		throw new Error(error.message);
 	}

@@ -12,6 +12,7 @@ export interface IEvent {
 	name: string;
 	type: "track" | "identify" | "alias" | "screen" | "page";
 	description: string;
+	additional_properties: boolean;
 	create_time: Date;
 	update_time: Date;
 }

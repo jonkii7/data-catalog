@@ -18,7 +18,7 @@ export async function getProperties(_req: Request, res: Response): Promise<void>
 }
 
 export async function getPropertyById(req: Request, res: Response): Promise<void> {
-	const id = req.params.id;
+	const id = req.params.pid;
 
 	try {
 		const property: IProperty = await propertiesService.getPropertyById(parseInt(id));
@@ -61,13 +61,20 @@ export async function postProperty(req: Request, res: Response): Promise<void> {
 		return;
 	}
 
-	try {
-		const property = await propertiesService.postProperty(name, type, description);
-		res.status(201).send({
-			property: property as IProperty,
+	if(typeof description !== "string") {
+		res.status(400).send({
+			error: "Description type should be string"
 		});
-	} catch(error: any) {
-		console.error(error);
+		return;
+	}
+
+	try {
+		const result = await propertiesService.postProperty(name, type, description);
+		res.status(201).send({
+			success: result ? true : false,
+		});
+	} catch(err: any) {
+		console.error(err);
 		res.status(500).json({
 			error: "Error creating property",
 		});
@@ -75,7 +82,7 @@ export async function postProperty(req: Request, res: Response): Promise<void> {
 }
 
 export async function updateProperty(req: Request, res: Response): Promise<void> {
-	const id = req.params.id;
+	const id = req.params.pid;
 
 	const { name, type, description}: IProperty = req.body;
 	if(!name || !type || !description) {
@@ -108,10 +115,10 @@ export async function updateProperty(req: Request, res: Response): Promise<void>
 		}
 
 		res.status(200).send({
-			success: result ? true : false,
+			success: true,
 		});
-	} catch(error: any) {
-		console.error(error);
+	} catch(err: any) {
+		console.error(err);
 		res.status(500).json({
 			error: "Error updating property",
 		});
@@ -119,13 +126,18 @@ export async function updateProperty(req: Request, res: Response): Promise<void>
 }
 
 export async function deleteProperty(req: Request, res: Response): Promise<void> {
-	const id = req.params.id;
+	const id = req.params.pid;
 
 	try {
 		const result = await propertiesService.deleteProperty(parseInt(id));
 		
+		if (!result) {
+			res.status(404).json({ error: "Property not found" });
+			return;
+		}
+
 		res.status(200).send({
-			success: result,
+			success: true,
 		});
 		return;
 	} catch (err) {
