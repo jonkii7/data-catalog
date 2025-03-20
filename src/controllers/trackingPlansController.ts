@@ -112,21 +112,21 @@ export async function postTrackingPlan(req: Request, res: Response): Promise<voi
 			
 				if(!["string", "number", "boolean"].includes(property.type)) {
 					res.status(400).send({
-						error: "Property's columns type should be one of 'string', 'number', 'boolean'"
+						error: "Property's column type should be one of 'string', 'number', 'boolean'"
 					});
 					return;
 				}
 			
 				if(typeof property.name !== property.type) {
 					res.status(400).send({
-						error: "Property's columns name type should be the same as type property."
+						error: "Property's column name type should be the same as type property."
 					});
 					return;
 				}
 			
 				if(typeof property.description !== "string") {
 					res.status(400).send({
-						error: "Description type should be string"
+						error: "Property's column description type should be string"
 					});
 					return;
 				}
