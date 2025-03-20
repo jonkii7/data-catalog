@@ -71,9 +71,9 @@ export async function postProperty(req: Request, res: Response): Promise<void> {
 	}
 
 	try {
-		const result = await propertiesService.postProperty(name, type, description);
+		await propertiesService.postProperty(name, type, description);
 		res.status(201).send({
-			success: result ? true : false,
+			success: true,
 		});
 	} catch(err: any) {
 		console.error(err);

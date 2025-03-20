@@ -141,7 +141,7 @@ export async function postTrackingPlan(req: Request, res: Response): Promise<voi
 		}
 
 		res.status(201).send({
-			success: result ? true : false,
+			success: true,
 		});
 	} catch(err: any) {
 		console.error(err);
@@ -217,8 +217,14 @@ export async function removeEventFromTrackingPlan(req: Request, res: Response): 
 
 	try {
 		const result = await trackingPlansService.removeEventFromTrackingPlan(parseInt(tid), parseInt(eid));
+
+		if (!result) {
+			res.status(404).json({ error: "Event in tracking plan not found" });
+			return;
+		}
+
 		res.status(200).send({
-			success: result ? true : false,
+			success: true,
 		});
 		return;
 	} catch(err: any) {

@@ -70,9 +70,9 @@ export async function postEvent(req: Request, res: Response): Promise<void> {
 	}
 
 	try {
-		const result = await eventsService.postEvent(name, type, description, additional_properties);
+		await eventsService.postEvent(name, type, description, additional_properties);
 		res.status(201).send({
-			success: result ? true : false,
+			success: true,
 		});
 	} catch(err: any) {
 		console.error(err);
@@ -201,8 +201,14 @@ export async function removePropertyFromEvent(req: Request, res: Response): Prom
 
 	try {
 		const result = await eventsService.removePropertyFromEvent(parseInt(eid), parseInt(pid));
+		
+		if (!result) {
+			res.status(404).json({ error: "Property in event not found" });
+			return;
+		}
+
 		res.status(200).send({
-			success: result ? true : false,
+			success: true,
 		});
 		return;
 	} catch(err: any) {
